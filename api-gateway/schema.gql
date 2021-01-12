@@ -1,0 +1,51 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: Int!
+  name: String!
+  bornDate: String!
+  description: String!
+  google: Boolean!
+  github: Boolean!
+  email: String!
+}
+
+type LoginResponse {
+  user: User!
+  accessToken: String!
+}
+
+type GenericResponse {
+  ok: Boolean!
+  msg: String!
+  user: User
+}
+
+type Product {
+  id: Int!
+  price: Int!
+  title: String!
+  user: User
+  userId: Int!
+  description: String!
+  createdAt: String!
+}
+
+type Query {
+  """[Requires Auth]"""
+  checkAuth: User!
+  products: [Product!]!
+}
+
+type Mutation {
+  confirmPhone(userId: Int!, code: Int!): GenericResponse!
+  login(email: String!, password: String!): LoginResponse
+  register(email: String!, name: String!, phoneNumber: String!, description: String!, password: String!, bornDate: DateTime!): GenericResponse
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime

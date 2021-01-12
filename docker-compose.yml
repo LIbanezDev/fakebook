@@ -1,0 +1,73 @@
+version: "3"
+
+services:
+
+  # Microservices
+  apigateway:
+    build:
+      context: "."
+      dockerfile: "api-gateway/Dockerfile"
+    env_file:
+      - docker/services/apigateway.env
+    ports:
+      - 3000:3000
+    depends_on:
+      - comms
+      - auth
+      - market
+
+  comms:
+    build:
+      context: .
+      dockerfile: comms-service/Dockerfile
+    env_file:
+      - docker/services/comms_service.env
+    depends_on:
+      - redis
+
+  auth:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    env_file:
+      - docker/services/auth_service.env
+    expose:
+      - 4444
+    depends_on:
+      - authdb
+
+  market:
+    build:
+      context: .
+      dockerfile: market/Dockerfile
+    env_file:
+      - docker/services/market_service.env
+    expose:
+      - 5555
+    depends_on:
+      - marketdb
+
+
+  # Databases
+  redis:
+    image: "redis:alpine"
+    expose:
+      - 6379
+
+  marketdb:
+    image: mysql:5.7.20
+    env_file:
+      - docker/dbs/marketdb.env
+
+  authdb:
+    image: mysql:5.7.20
+    env_file:
+      - docker/dbs/authdb.env
+
+  # Database admin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8000:80"
+    volumes:
+      - ./phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php

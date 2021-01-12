@@ -1,0 +1,42 @@
+import { IsEmail, IsEnum, IsInt, IsPhoneNumber, IsString } from 'class-validator';
+
+export enum AUTH_APPS {
+  Google,
+  GitHub,
+}
+
+export class ConfirmCodeDto {
+  @IsInt()
+  code: number;
+
+  @IsInt()
+  userId: number;
+}
+
+export class RegisterDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  name: string;
+
+  @IsString()
+  description: string;
+
+  @IsPhoneNumber('CL')
+  phoneNumber: string;
+
+  @IsString()
+  password: string;
+
+  @IsString()
+  bornDate: Date;
+}
+
+export class SocialRegisterDto {
+  @IsString()
+  token!: string;
+
+  @IsEnum(AUTH_APPS)
+  type!: AUTH_APPS;
+}

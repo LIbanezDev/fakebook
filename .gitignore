@@ -1,0 +1,12 @@
+.idea
+build
+node_modules
+venv
+dist
+.env
+out
+.next
+*.iml
+.dat
+__pycache__
+venv
