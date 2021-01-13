@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
@@ -10,10 +10,6 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ConfirmationCode } from './entity/confirmation_code.entity';
 import { ResponseInterface } from './interfaces/response.interface';
 
-export enum AUTH_APPS {
-  Google,
-  GitHub,
-}
 
 interface IVerifyPassword {
   inputPassword: string;
@@ -28,10 +24,11 @@ export class AuthService {
     @InjectRepository(User) private readonly usersRepo: Repository<User>,
     @InjectRepository(ConfirmationCode) private readonly confirmationCodeRepo: Repository<ConfirmationCode>,
     private readonly jwtService: JwtService,
-  ) {}
+  ) {
+  }
 
   getByIds(ids: number[]) {
-    return this.usersRepo.findByIds(ids)
+    return this.usersRepo.findByIds(ids);
   }
 
   getById(id: number) {
@@ -63,12 +60,11 @@ export class AuthService {
       },
     });
     if (userDB) return { ok: false, msg: 'Usuario ya registrado' };
-    const newUser = this.usersRepo.create(data);
-    const result = await this.usersRepo.insert(newUser);
+    const dbUser = await this.usersRepo.save(this.usersRepo.create({ ...data, verified: true }));
     const confirmationCode = Math.floor(Math.random() * 9999) + 1000;
     await this.confirmationCodeRepo.insert({
       code: confirmationCode,
-      userId: result.identifiers[0]['id'],
+      userId: dbUser.id,
     });
     await this.clientRedis.emit('CONFIRMATION_CODE', {
       phoneNumber: data.phoneNumber,

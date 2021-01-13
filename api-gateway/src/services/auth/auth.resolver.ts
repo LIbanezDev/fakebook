@@ -12,11 +12,6 @@ import { JwtPayload } from './jwt';
 export class AuthResolver {
   constructor(@Inject('AUTH_CLIENT') private readonly authClient: ClientProxy) {}
 
-  @ResolveField()
-  bornDate(@Root() user: User) {
-    return new Date(user.bornDate).toLocaleDateString();
-  }
-
   @UseGuards(AuthGuard)
   @Query(() => User, { description: '[Requires Auth]' })
   checkAuth(@CurrentUserGQL() user: JwtPayload) {
@@ -41,7 +36,6 @@ export class AuthResolver {
   register(@Args() data: RegisterArgs) {
     return this.authClient
       .send<{ user: User; accessToken: string } | null>({ role: 'auth', cmd: 'register' }, data)
-      .pipe(timeout(3000))
       .toPromise();
   }
 }

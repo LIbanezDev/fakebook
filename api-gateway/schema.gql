@@ -37,6 +37,7 @@ type Product {
 type Query {
   """[Requires Auth]"""
   checkAuth: User!
+  seed: Boolean!
   products: [Product!]!
 }
 

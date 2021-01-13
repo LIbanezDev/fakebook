@@ -1,5 +1,5 @@
 import { HttpException } from '@nestjs/common';
-import { Product } from '../market/market.entity';
+import { Product } from '../services/market/market.entity';
 
 export interface MutationResponse {
   ok: string;

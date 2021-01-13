@@ -4,13 +4,13 @@ import { Inject, UseGuards } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { User } from '../auth/auth.entity';
 import { CreateProductArgs, DeleteProductArgs, UpdateProductArgs } from './market.dto';
-import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUserGQL } from '../auth/auth.decorators';
 import { JwtPayload } from '../auth/jwt';
-import { getResponse, MutationResponse } from '../utils/default';
+import { getResponse, MutationResponse } from '../../utils/default';
+import { internet, lorem, name } from 'faker';
+import { AuthGuard } from '../auth/auth.guard';
 
 
-@UseGuards(AuthGuard)
 @Resolver(of => Product)
 export class MarketResolver {
   constructor(
@@ -18,6 +18,35 @@ export class MarketResolver {
     @Inject('MARKET_CLIENT') private readonly marketClient: ClientProxy) {
   }
 
+  @Query(() => Boolean)
+  async seed() {
+    const usersPromises = [];
+    const productsPromises = [];
+    for (let i = 0; i < 10; i++) {
+      const firstName = name.firstName();
+      const lastName = name.lastName();
+      usersPromises.push(this.authClient
+        .send<{ user: User; accessToken: string } | null>({ role: 'auth', cmd: 'register' }, {
+          name: firstName + ' ' + lastName,
+          description: lorem.lines(5),
+          bornDate: new Date(2001, 1, 18),
+          email: internet.email(firstName, lastName, 'gmail'),
+          password: '123456',
+          phoneNumber: '56930307070',
+        }).toPromise());
+    }
+    await Promise.all(usersPromises);
+    for (let i = 0; i < 10; i++) {
+      productsPromises.push(this.marketClient.send<MutationResponse>({ role: 'market', cmd: 'createProduct' }, {
+        title: name.title(),
+        description: lorem.lines(8),
+        price: Math.random() * (459900 - 1000) + 1000,
+        userId: Math.random() * (11 - 1) + 1,
+      }).toPromise());
+    }
+    await Promise.all(productsPromises);
+    return true;
+  }
 
   @Query(() => [Product])
   async products() {
@@ -30,6 +59,7 @@ export class MarketResolver {
     }));
   }
 
+  @UseGuards(AuthGuard)
   @Mutation(() => Product)
   async createProduct(@Args() data: CreateProductArgs, @CurrentUserGQL() user: JwtPayload) {
     return getResponse(await this.marketClient.send<MutationResponse>({ role: 'market', cmd: 'createProduct' }, {
@@ -38,6 +68,7 @@ export class MarketResolver {
     }).toPromise());
   }
 
+  @UseGuards(AuthGuard)
   @Mutation(() => Product)
   async updateProduct(@Args() data: UpdateProductArgs, @CurrentUserGQL() user: JwtPayload) {
     return getResponse(await this.marketClient.send<MutationResponse>({ role: 'market', cmd: 'updateProduct' }, {
@@ -46,6 +77,7 @@ export class MarketResolver {
     }).toPromise());
   }
 
+  @UseGuards(AuthGuard)
   @Mutation(() => Product)
   async deleteProduct(@Args() data: DeleteProductArgs, @CurrentUserGQL() user: JwtPayload) {
     return getResponse(await this.marketClient.send<MutationResponse>({ role: 'market', cmd: 'deleteProduct' }, {
