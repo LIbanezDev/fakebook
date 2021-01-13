@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entity/product.entity';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { ClientProxy } from '@nestjs/microservices';
 import { DeleteProductDto, MutationResponse } from './dto/product.dto';
 
