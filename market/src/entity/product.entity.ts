@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 
 @Entity({ name: 'products' })
@@ -19,6 +19,12 @@ export class Product {
   @Column({ type: 'varchar', length: 700 })
   description: string;
 
+  @UpdateDateColumn()
+  updatedAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }
