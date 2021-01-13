@@ -1,5 +1,0 @@
-.idea
-*.iml
-db/*
-__pycache__/
-venv

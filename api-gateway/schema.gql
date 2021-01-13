@@ -30,6 +30,7 @@ type Product {
   user: User
   userId: Int!
   description: String!
+  updatedAt: String!
   createdAt: String!
 }
 
@@ -43,6 +44,9 @@ type Mutation {
   confirmPhone(userId: Int!, code: Int!): GenericResponse!
   login(email: String!, password: String!): LoginResponse
   register(email: String!, name: String!, phoneNumber: String!, description: String!, password: String!, bornDate: DateTime!): GenericResponse
+  createProduct(title: String!, price: Int!, description: String!): Product!
+  updateProduct(id: Int!, title: String, price: Float, description: String): Product!
+  deleteProduct(id: Int!): Product!
 }
 
 """

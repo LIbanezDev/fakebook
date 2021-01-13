@@ -36,4 +36,4 @@ import { MarketResolver } from './services/market/market.resolver';
     },
   ],
 })
-export class ApiGatewayModule {}
+export class AppModule {}

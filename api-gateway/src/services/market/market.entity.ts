@@ -23,5 +23,8 @@ export class Product {
   description: string;
 
   @Field(() => String)
+  updatedAt: Date;
+
+  @Field(() => String)
   createdAt: Date;
 }

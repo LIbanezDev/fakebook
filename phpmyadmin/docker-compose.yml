@@ -1,0 +1,17 @@
+version: "3"
+
+# Development
+services:
+  mysqldb:
+    image: mysql:5.7.20
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8080:80"
+    links:
+      - mysqldb
+    depends_on:
+      - mysqldb

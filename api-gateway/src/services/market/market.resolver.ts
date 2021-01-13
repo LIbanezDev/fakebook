@@ -1,10 +1,16 @@
-import { Query, ResolveField, Resolver, Root } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Product } from './market.entity';
-import { Inject, Logger } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { User } from '../auth/auth.entity';
+import { CreateProductArgs, DeleteProductArgs, UpdateProductArgs } from './market.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { CurrentUserGQL } from '../auth/auth.decorators';
+import { JwtPayload } from '../auth/jwt';
+import { getResponse, MutationResponse } from '../utils/default';
 
 
+@UseGuards(AuthGuard)
 @Resolver(of => Product)
 export class MarketResolver {
   constructor(
@@ -12,10 +18,6 @@ export class MarketResolver {
     @Inject('MARKET_CLIENT') private readonly marketClient: ClientProxy) {
   }
 
-  @ResolveField()
-  createdAt(@Root() product: Product) {
-    return new Date(product.createdAt).toLocaleDateString();
-  }
 
   @Query(() => [Product])
   async products() {
@@ -26,5 +28,30 @@ export class MarketResolver {
       ...product,
       user: users.find(user => user.id === product.userId),
     }));
+  }
+
+  @Mutation(() => Product)
+  async createProduct(@Args() data: CreateProductArgs, @CurrentUserGQL() user: JwtPayload) {
+    return getResponse(await this.marketClient.send<MutationResponse>({ role: 'market', cmd: 'createProduct' }, {
+      userId: user.id,
+      ...data,
+    }).toPromise());
+  }
+
+  @Mutation(() => Product)
+  async updateProduct(@Args() data: UpdateProductArgs, @CurrentUserGQL() user: JwtPayload) {
+    return getResponse(await this.marketClient.send<MutationResponse>({ role: 'market', cmd: 'updateProduct' }, {
+      ...data,
+      userId: user.id,
+    }).toPromise());
+  }
+
+  @Mutation(() => Product)
+  async deleteProduct(@Args() data: DeleteProductArgs, @CurrentUserGQL() user: JwtPayload) {
+    return getResponse(await this.marketClient.send<MutationResponse>({ role: 'market', cmd: 'deleteProduct' }, {
+        id: data.id,
+        userId: user.id,
+      },
+    ).toPromise());
   }
 }
