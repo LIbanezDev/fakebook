@@ -4,9 +4,7 @@ services:
 
   # Microservices
   apigateway:
-    build:
-      context: "."
-      dockerfile: "api-gateway/Dockerfile"
+    image: lucasignacio18/fakebook/
     env_file:
       - docker/services/apigateway.env
     ports:
@@ -19,7 +17,7 @@ services:
   comms:
     build:
       context: .
-      dockerfile: comms-service/Dockerfile
+      dockerfile: comms/Dockerfile
     env_file:
       - docker/services/comms_service.env
     depends_on:

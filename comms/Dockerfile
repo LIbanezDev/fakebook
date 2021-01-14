@@ -2,11 +2,9 @@ FROM node:12-alpine AS BUILD_IMAGE
 
 WORKDIR /usr/src/app
 
-COPY package.json package-lock.json ./
+COPY . .
 
 RUN npm i
-
-COPY . .
 
 RUN npm run build
 
