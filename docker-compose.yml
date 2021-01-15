@@ -2,9 +2,32 @@ version: "3"
 
 services:
 
+  # Nginx & SSL
+  nginx:
+    image: nginx:1.15-alpine
+    restart: unless-stopped
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d
+      - ./docker/certbot/conf:/etc/letsencrypt
+      - ./docker/certbot/www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./docker/certbot/conf:/etc/letsencrypt
+      - ./docker/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+
   # Microservices
   apigateway:
-    image: lucasignacio18/fakebook/
+    image: lucasignacio18/fakebook/apigateway-1.0
+    restart: unless-stopped
     env_file:
       - docker/services/apigateway.env
     ports:
@@ -15,18 +38,16 @@ services:
       - market
   
   comms:
-    build:
-      context: .
-      dockerfile: comms/Dockerfile
+    image: lucasignacio18/fakebook/comms-1.0
+    restart: unless-stopped
     env_file:
       - docker/services/comms_service.env
     depends_on:
       - redis
 
   auth:
-    build:
-      context: .
-      dockerfile: auth-service/Dockerfile
+    image: lucasignacio18/fakebook/auth-1.0
+    restart: unless-stopped
     env_file:
       - docker/services/auth_service.env
     expose:
@@ -35,9 +56,8 @@ services:
       - authdb
 
   market:
-    build:
-      context: .
-      dockerfile: market/Dockerfile
+    image: lucasignacio18/fakebook/market-1.0
+    restart: unless-stopped
     env_file:
       - docker/services/market_service.env
     expose:
@@ -49,22 +69,26 @@ services:
   # Databases
   redis:
     image: "redis:alpine"
+    restart: unless-stopped
     expose:
       - 6379
 
   marketdb:
     image: mysql:5.7.20
+    restart: unless-stopped
     env_file:
       - docker/dbs/marketdb.env
 
   authdb:
     image: mysql:5.7.20
+    restart: unless-stopped
     env_file:
       - docker/dbs/authdb.env
 
   # Database admin
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
     ports:
       - "8000:80"
     volumes:

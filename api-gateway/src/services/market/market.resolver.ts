@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Product } from './market.entity';
-import { Inject, UseGuards } from '@nestjs/common';
+import { Inject, Logger, UseGuards } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { User } from '../auth/auth.entity';
 import { CreateProductArgs, DeleteProductArgs, UpdateProductArgs } from './market.dto';
@@ -9,7 +9,8 @@ import { JwtPayload } from '../auth/jwt';
 import { getResponse, MutationResponse } from '../../utils/default';
 import { internet, lorem, name } from 'faker';
 import { AuthGuard } from '../auth/auth.guard';
-
+import { FileUpload, GraphQLUpload } from 'graphql-upload';
+import { createWriteStream } from 'fs';
 
 @Resolver(of => Product)
 export class MarketResolver {
@@ -85,5 +86,15 @@ export class MarketResolver {
         userId: user.id,
       },
     ).toPromise());
+  }
+
+  @Mutation(() => Boolean)
+  uploadFile(@Args({ name: 'file', type: () => GraphQLUpload }) file: FileUpload) {
+    return new Promise(async (resolve, reject) =>
+      file.createReadStream()
+        .pipe(createWriteStream(`./uploads/${file.filename}`))
+        .on('finish', () => resolve(true))
+        .on('error', () => reject(false)),
+    );
   }
 }

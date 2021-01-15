@@ -3,16 +3,15 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import * as helmet from 'helmet'
-import * as csurf from 'csurf';
+import { graphqlUploadExpress } from 'graphql-upload';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: true,
     bodyParser: true,
   });
-  app.use(helmet());
-  app.use(csurf());
+  app.use(graphqlUploadExpress({ maxFileSize: 2600000, maxFiles: 10 }));
+  // app.use(helmet());
   app.useGlobalPipes(new ValidationPipe());
   const options = new DocumentBuilder()
     .setTitle('Microservices')

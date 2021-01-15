@@ -9,6 +9,7 @@ const getErrorsAsString = (data: string | string[]) => {
 };
 
 export const apolloConfig: GqlModuleOptions = {
+  uploads: false,
   autoSchemaFile: 'schema.gql',
   introspection: true,
   installSubscriptionHandlers: true,
