@@ -13,17 +13,18 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - comms
+      - chat
       - auth
       - market
+      - users
   
-  comms:
+  chat:
     build:
-      context: chat
+      context: ./chat
     image: lucasignacio18/fakebook:chat-1.0
     restart: unless-stopped
     env_file:
-      - docker/services/comms_service.env
+      - docker/services/chat_service.env
     depends_on:
       - redis
 
@@ -51,6 +52,17 @@ services:
     depends_on:
       - marketdb
 
+  users:
+    build:
+      context: ./users
+    image: lucasignacio18/fakebook:users-1.0
+    restart: unless-stopped
+    env_file:
+      - docker/services/market_service.env
+    expose:
+      - 6666
+    depends_on:
+      - usersdb
 
   # Databases
   redis:
@@ -70,6 +82,12 @@ services:
     restart: unless-stopped
     env_file:
       - docker/dbs/authdb.env
+
+  usersdb:
+    image: mysql:5.7.20
+    restart: unless-stopped
+    env_file:
+      - docker/dbs/usersdb.env
 
   # Database admin
   phpmyadmin:
