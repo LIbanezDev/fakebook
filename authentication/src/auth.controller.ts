@@ -11,7 +11,8 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly health: HealthCheckService,
     private readonly database: TypeOrmHealthIndicator,
-  ) {}
+  ) {
+  }
 
   @MessagePattern({ role: 'auth', cmd: 'health' })
   async healthChecker() {
@@ -30,16 +31,6 @@ export class AuthController {
     return this.authService.confirmCode(data);
   }
 
-  @MessagePattern({ role: 'auth', cmd: 'googleRegister' })
-  googleRegister(data: ConfirmCodeDto) {
-    return this.authService.confirmCode(data);
-  }
-
-  @MessagePattern({ role: 'auth', cmd: 'me' })
-  me(id: number) {
-    return this.authService.getById(id);
-  }
-
   @MessagePattern({ role: 'auth', cmd: 'register' })
   register(data: RegisterDto) {
     return this.authService.register(data);
@@ -53,15 +44,5 @@ export class AuthController {
   @MessagePattern({ role: 'auth', cmd: 'login' })
   login(data: RegisterDto) {
     return this.authService.login(data);
-  }
-
-  @MessagePattern({ role: 'auth', cmd: 'userById' })
-  getOne(userId: number) {
-    return this.authService.getById(userId);
-  }
-
-  @MessagePattern({ role: 'auth', cmd: 'usersById' })
-  getMany(usersId: number[]) {
-    return this.authService.getByIds(usersId);
   }
 }

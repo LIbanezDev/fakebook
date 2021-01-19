@@ -5,6 +5,8 @@ interface GlobalConfig {
   redisUri: string;
   authService: { transport: Transport.TCP } & TcpOptions;
   marketService: { transport: Transport.TCP } & TcpOptions;
+  usersService: { transport: Transport.TCP } & TcpOptions;
+  gcpCredentials: object
 }
 
 export const globalConfig = (): GlobalConfig => ({
@@ -24,4 +26,12 @@ export const globalConfig = (): GlobalConfig => ({
       port: parseInt(process.env.MARKET_SV_PORT),
     },
   },
+  usersService: {
+    transport: Transport.TCP,
+    options: {
+      host: process.env.USERS_SV_HOST,
+      port: parseInt(process.env.USERS_SV_PORT),
+    },
+  },
+  gcpCredentials: JSON.parse(process.env.GCP_CREDS) || {},
 });

@@ -1,8 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
-import { GlobalConfig } from '../../config/global.config';
-import * as twilio from 'twilio';
 import { ConfirmCodeDto } from '../dto/confirm-code.dto';
 
 
@@ -10,7 +6,7 @@ import { ConfirmCodeDto } from '../dto/confirm-code.dto';
 export class EmailService {
   async sendWelcomeEmail(to: string) {
     try {
-      throw new Error('Building')
+      throw new Error('Building');
     } catch (e) {
       Logger.log(e);
     }

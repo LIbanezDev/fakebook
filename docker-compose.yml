@@ -2,31 +2,11 @@ version: "3"
 
 services:
 
-  # Nginx & SSL
-  nginx:
-    image: nginx:1.15-alpine
-    restart: unless-stopped
-    volumes:
-      - ./docker/nginx:/etc/nginx/conf.d
-      - ./docker/certbot/conf:/etc/letsencrypt
-      - ./docker/certbot/www:/var/www/certbot
-    ports:
-      - "80:80"
-      - "443:443"
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - ./docker/certbot/conf:/etc/letsencrypt
-      - ./docker/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-
-
   # Microservices
   apigateway:
-    image: lucasignacio18/fakebook/apigateway-1.0
+    build:
+      context: ./api-gateway
+    image: lucasignacio18/fakebook:api-gateway-1.0
     restart: unless-stopped
     env_file:
       - docker/services/apigateway.env
@@ -38,7 +18,9 @@ services:
       - market
   
   comms:
-    image: lucasignacio18/fakebook/comms-1.0
+    build:
+      context: chat
+    image: lucasignacio18/fakebook:chat-1.0
     restart: unless-stopped
     env_file:
       - docker/services/comms_service.env
@@ -46,7 +28,9 @@ services:
       - redis
 
   auth:
-    image: lucasignacio18/fakebook/auth-1.0
+    build:
+      context: ./authentication
+    image: lucasignacio18/fakebook:auth-1.0
     restart: unless-stopped
     env_file:
       - docker/services/auth_service.env
@@ -56,7 +40,9 @@ services:
       - authdb
 
   market:
-    image: lucasignacio18/fakebook/market-1.0
+    build:
+      context: ./market
+    image: lucasignacio18/fakebook:market-1.0
     restart: unless-stopped
     env_file:
       - docker/services/market_service.env

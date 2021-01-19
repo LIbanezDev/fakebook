@@ -3,52 +3,49 @@
 # ------------------------------------------------------
 
 type User {
-  id: Int!
-  name: String!
-  bornDate: String!
-  description: String!
-  google: Boolean!
-  github: Boolean!
-  email: String!
+    id: Int!
+    name: String!
+    description: String!
+    bornDate: String!
 }
 
 type LoginResponse {
-  user: User!
-  accessToken: String!
+    user: User!
+    accessToken: String!
 }
 
-type GenericResponse {
-  ok: Boolean!
-  msg: String!
-  user: User
+type RegisterResponse {
+    ok: Boolean!
+    msg: String!
+    code: User
 }
 
 type Product {
-  id: Int!
-  price: Int!
-  title: String!
-  user: User
-  userId: Int!
-  description: String!
-  updatedAt: String!
-  createdAt: String!
+    id: Int!
+    price: Int!
+    title: String!
+    user: User
+    userId: Int!
+    description: String!
+    updatedAt: String!
+    createdAt: String!
 }
 
 type Query {
-  """[Requires Auth]"""
-  checkAuth: User!
-  seed: Boolean!
-  products: [Product!]!
+    """[Requires Auth]"""
+    checkAuth: User!
+    seed: Boolean!
+    products: [Product!]!
 }
 
 type Mutation {
-  confirmPhone(userId: Int!, code: Int!): GenericResponse!
-  login(email: String!, password: String!): LoginResponse
-  register(email: String!, name: String!, phoneNumber: String!, description: String!, password: String!, bornDate: DateTime!): GenericResponse
-  createProduct(title: String!, price: Int!, description: String!): Product!
-  updateProduct(id: Int!, title: String, price: Float, description: String): Product!
-  deleteProduct(id: Int!): Product!
-  uploadFile(file: Upload!): Boolean!
+    confirmEmail(credId: Int!, code: Int!): RegisterResponse!
+    login(email: String!, password: String!): LoginResponse
+    register(email: String!, name: String!, phoneNumber: String!, description: String!, password: String!, bornDate: DateTime!): RegisterResponse
+    createProduct(title: String!, price: Int!, description: String!): Product!
+    updateProduct(id: Int!, title: String, price: Float, description: String): Product!
+    deleteProduct(id: Int!): Product!
+    uploadFile(image: Upload!): Boolean!
 }
 
 """

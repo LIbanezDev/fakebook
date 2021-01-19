@@ -1,11 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
 import { EmailService } from './email.service';
-import {ConfirmCodeDto} from "../dto/confirm-code.dto";
+import { ConfirmCodeDto } from '../dto/confirm-code.dto';
 
 @Controller('email')
 export class EmailController {
-  constructor(private readonly emailService: EmailService) {}
+  constructor(private readonly emailService: EmailService) {
+  }
 
   @EventPattern('NEW_USER')
   sendEmail(email: string) {

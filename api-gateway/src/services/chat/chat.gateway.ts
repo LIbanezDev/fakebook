@@ -19,10 +19,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log('Un cliente se conecto', client.id)
+    this.logger.log('Un cliente se conecto', client.id);
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log('Un cliente se desconecto', client.id)
+    this.logger.log('Un cliente se desconecto', client.id);
   }
 }

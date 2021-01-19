@@ -4,7 +4,9 @@ import { JwtOptionsFactory } from '@nestjs/jwt';
 
 @Injectable()
 export class JWTConfig implements JwtOptionsFactory {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {
+  }
+
   createJwtOptions() {
     return {
       signOptions: {

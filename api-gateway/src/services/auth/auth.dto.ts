@@ -1,11 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { IsEmail, IsPhoneNumber } from 'class-validator';
-
-export interface AuthUser {
-  id: number;
-  email: string;
-  roles: string[];
-}
+import { IsEmail } from 'class-validator';
 
 @ArgsType()
 export class RegisterArgs {
@@ -16,11 +10,7 @@ export class RegisterArgs {
   @Field()
   name: string;
 
-  @Field()
-  @IsPhoneNumber('CL')
-  phoneNumber: string;
-
-  @Field()
+  @Field({ nullable: true })
   description: string | null;
 
   @Field()

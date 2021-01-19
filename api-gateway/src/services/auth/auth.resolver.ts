@@ -1,41 +1,41 @@
-import { Args, Mutation, Query, ResolveField, Resolver, Root } from '@nestjs/graphql';
-import { ConfirmPhoneArgs, GenericResponse, LoginResponse, User } from './auth.entity';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { ConfirmCodeResponse, ConfirmPhoneArgs, LoginResponse, RegisterResponse } from './auth.entity';
 import { LoginArgs, RegisterArgs } from './auth.dto';
 import { Inject, UseGuards } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
-import { timeout } from 'rxjs/operators';
 import { ClientProxy } from '@nestjs/microservices';
 import { CurrentUserGQL } from './auth.decorators';
 import { JwtPayload } from './jwt';
+import { User } from '../user/user.entity';
 
 @Resolver(() => User)
 export class AuthResolver {
-  constructor(@Inject('AUTH_CLIENT') private readonly authClient: ClientProxy) {}
+  constructor(
+    @Inject('USERS_CLIENT') private readonly usersClient: ClientProxy,
+    @Inject('AUTH_CLIENT') private readonly authClient: ClientProxy,
+  ) {
+  }
 
   @UseGuards(AuthGuard)
   @Query(() => User, { description: '[Requires Auth]' })
   checkAuth(@CurrentUserGQL() user: JwtPayload) {
-    return this.authClient.send({ role: 'auth', cmd: 'me' }, user.id).pipe(timeout(3000)).toPromise();
+    return this.usersClient.send({ role: 'user', cmd: 'getById' }, user.id).toPromise();
   }
 
-  @Mutation(() => GenericResponse)
-  async confirmPhone(@Args() data: ConfirmPhoneArgs) {
-    const res = await this.authClient.send({ role: 'auth', cmd: 'confirmationCode' }, data).pipe(timeout(3000)).toPromise();
-    return {
-      ...res,
-      user: res.data,
-    };
+  @Mutation(() => ConfirmCodeResponse)
+  confirmEmail(@Args() data: ConfirmPhoneArgs): Promise<ConfirmCodeResponse> {
+    return this.authClient.send<ConfirmCodeResponse>({ role: 'auth', cmd: 'confirmationCode' }, data).toPromise();
   }
 
   @Mutation(() => LoginResponse, { nullable: true })
   login(@Args() data: LoginArgs) {
-    return this.authClient.send({ role: 'auth', cmd: 'login' }, data).pipe(timeout(3000)).toPromise();
+    return this.authClient.send({ role: 'auth', cmd: 'login' }, data).toPromise();
   }
 
-  @Mutation(() => GenericResponse, { nullable: true })
-  register(@Args() data: RegisterArgs) {
+  @Mutation(() => RegisterResponse, { nullable: true })
+  register(@Args() data: RegisterArgs): Promise<RegisterResponse> {
     return this.authClient
-      .send<{ user: User; accessToken: string } | null>({ role: 'auth', cmd: 'register' }, data)
+      .send<RegisterResponse>({ role: 'auth', cmd: 'register' }, data)
       .toPromise();
   }
 }

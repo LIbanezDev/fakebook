@@ -2,7 +2,7 @@ import { Controller, Get, Inject } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ClientProxy, Transport } from '@nestjs/microservices';
 import { timeout } from 'rxjs/operators';
-import { HealthCheckService, MicroserviceHealthIndicator, MemoryHealthIndicator, DiskHealthIndicator } from '@nestjs/terminus';
+import { DiskHealthIndicator, HealthCheckService, MemoryHealthIndicator, MicroserviceHealthIndicator } from '@nestjs/terminus';
 import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Microservices health')
@@ -15,7 +15,8 @@ export class HealthController {
     private readonly diskHealth: DiskHealthIndicator,
     private readonly memoryHealth: MemoryHealthIndicator,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+  }
 
   @Get('api_gateway')
   gatewayHealth() {
@@ -27,7 +28,7 @@ export class HealthController {
     return this.authClient.send({ role: 'auth', cmd: 'health' }, '').pipe(timeout(3000)).toPromise();
   }
 
-  @Get('comms')
+  @Get('chat')
   redis() {
     return this.healthCheck.check([
       () =>

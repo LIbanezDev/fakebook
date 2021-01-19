@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsInt, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsInt, IsString } from 'class-validator';
 
 export enum AUTH_APPS {
   Google,
@@ -10,7 +10,7 @@ export class ConfirmCodeDto {
   code: number;
 
   @IsInt()
-  userId: number;
+  credId: number;
 }
 
 export class RegisterDto {
@@ -22,9 +22,6 @@ export class RegisterDto {
 
   @IsString()
   description: string;
-
-  @IsPhoneNumber('CL')
-  phoneNumber: string;
 
   @IsString()
   password: string;

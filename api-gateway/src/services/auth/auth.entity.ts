@@ -1,29 +1,10 @@
 import { ArgsType, Field, Int, ObjectType } from '@nestjs/graphql';
-
-@ObjectType()
-export class User {
-  @Field(() => Int)
-  id: number;
-  @Field()
-  name: string;
-  @Field(() => String)
-  bornDate: Date;
-  @Field()
-  description: string;
-  @Field()
-  google: boolean;
-  @Field()
-  github: boolean;
-  @Field()
-  email: string;
-  password: string;
-  salt: string;
-}
+import { User } from '../user/user.entity';
 
 @ArgsType()
 export class ConfirmPhoneArgs {
   @Field(() => Int)
-  userId: number;
+  credId: number;
 
   @Field(() => Int)
   code: number;
@@ -39,13 +20,16 @@ export class LoginResponse {
 }
 
 @ObjectType()
-export class GenericResponse {
+export class ConfirmCodeResponse {
   @Field()
   ok: boolean;
 
   @Field()
   msg: string;
+}
 
-  @Field(() => User, { nullable: true })
-  user: User;
+@ObjectType()
+export class RegisterResponse extends ConfirmCodeResponse {
+  @Field(() => Int)
+  code: number;
 }

@@ -9,6 +9,8 @@ import { ClientProxyFactory } from '@nestjs/microservices';
 import { HealthController } from './services/health/health.controller';
 import { ChatGateway } from './services/chat/chat.gateway';
 import { MarketResolver } from './services/market/market.resolver';
+import { UserResolver } from './services/user/user.resolver';
+import { Storage } from '@google-cloud/storage';
 
 @Module({
   imports: [
@@ -24,9 +26,15 @@ import { MarketResolver } from './services/market/market.resolver';
     ChatGateway,
     AuthResolver,
     MarketResolver,
+    UserResolver,
     {
       provide: 'AUTH_CLIENT',
       useFactory: (configService: ConfigService) => ClientProxyFactory.create(configService.get('authService')),
+      inject: [ConfigService],
+    },
+    {
+      provide: 'USERS_CLIENT',
+      useFactory: (configService: ConfigService) => ClientProxyFactory.create(configService.get('usersService')),
       inject: [ConfigService],
     },
     {
@@ -34,6 +42,19 @@ import { MarketResolver } from './services/market/market.resolver';
       useFactory: (configService: ConfigService) => ClientProxyFactory.create(configService.get('marketService')),
       inject: [ConfigService],
     },
+    {
+      provide: 'GCP_BUCKET',
+      useFactory: (configService: ConfigService) => {
+        const gcpKeys = configService.get('gcpCredentials');
+        const storage = new Storage({
+          projectId: gcpKeys.projectId,
+          credentials: gcpKeys,
+        });
+        return storage.bucket('fake_book');
+      },
+      inject: [ConfigService],
+    },
   ],
 })
-export class AppModule {}
+export class AppModule {
+}

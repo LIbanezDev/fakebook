@@ -13,4 +13,5 @@ import { globalConfig } from './config/global.config';
     }),
   ],
 })
-export class AppModule {}
+export class AppModule {
+}
