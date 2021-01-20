@@ -23,8 +23,8 @@ import { ClientProxyFactory } from '@nestjs/microservices';
   providers: [
     MarketService,
     {
-      provide: 'AUTH_CLIENT',
-      useFactory: (configService: ConfigService) => ClientProxyFactory.create(configService.get('authService')),
+      provide: 'USERS_CLIENT',
+      useFactory: (configService: ConfigService) => ClientProxyFactory.create(configService.get('usersService')),
       inject: [ConfigService],
     },
   ],

@@ -3,7 +3,7 @@ import { MicroserviceOptions, TcpOptions, Transport } from '@nestjs/microservice
 
 interface IDefaultConfig {
   database: TypeOrmModuleOptions,
-  authService: MicroserviceOptions & TcpOptions,
+  usersService: MicroserviceOptions & TcpOptions,
 }
 
 export const defaultConfig = (): IDefaultConfig => ({
@@ -14,11 +14,11 @@ export const defaultConfig = (): IDefaultConfig => ({
     logging: true,
     synchronize: true,
   },
-  authService: {
+  usersService: {
     transport: Transport.TCP,
     options: {
-      host: process.env.AUTH_SV_HOST,
-      port: parseInt(process.env.AUTH_SV_PORT)
-    }
-  }
+      host: process.env.USERS_SV_HOST,
+      port: parseInt(process.env.USERS_SV_PORT),
+    },
+  },
 });

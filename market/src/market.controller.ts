@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { MarketService } from './market.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { Product } from './entity/product.entity';

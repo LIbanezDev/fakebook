@@ -5,9 +5,10 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DatabaseConfig implements TypeOrmOptionsFactory {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {
+  }
 
   createTypeOrmOptions(connectionName?: string) {
-    return this.configService.get('database')
+    return this.configService.get('database');
   }
 }

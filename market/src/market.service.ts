@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entity/product.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ClientProxy } from '@nestjs/microservices';
 import { DeleteProductDto, MutationResponse } from './dto/product.dto';
 
@@ -9,7 +9,7 @@ import { DeleteProductDto, MutationResponse } from './dto/product.dto';
 export class MarketService {
   constructor(
     @InjectRepository(Product) private readonly productsRepo: Repository<Product>,
-    @Inject('AUTH_CLIENT') private readonly authClient: ClientProxy,
+    @Inject('USERS_CLIENT') private readonly usersClient: ClientProxy,
   ) {
   }
 
